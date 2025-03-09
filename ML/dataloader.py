@@ -8,7 +8,7 @@ class ParticleJetDataset(Dataset):
         self.tree = uproot.open(root_file)["tree"]
 
 
-        reduce_ds=2
+        reduce_ds=1
         # Get number of events
         self.nevents = self.tree.num_entries
         if  reduce_ds == 0:
@@ -53,16 +53,25 @@ class ParticleJetDataset(Dataset):
         part_features = np.stack([
             self.full_data_array["part_eta"][idx],
             self.full_data_array["part_phi"][idx],
-            self.full_data_array["part_mass"][idx],
-            self.full_data_array["part_massReco"][idx],
-            self.full_data_array["part_pid"][idx]
+            #self.full_data_array["part_mass"][idx],
+            #self.full_data_array["part_massReco"][idx],
+            #self.full_data_array["part_pid"][idx],
+            #target
+            self.full_data_array["part_isFromD"][idx]
         ], axis=1)
 
-        # Extract per-particle labels
-        labels_particle = np.stack([
-            self.full_data_array["part_isFromD"][idx],
-            self.full_data_array["part_isFromDStar"][idx]
-        ], axis=1)
+
+        # **Convert one-hot labels to three-class indices**
+        isFromD = self.full_data_array["part_isFromD"][idx]
+        isFromDStar = self.full_data_array["part_isFromDStar"][idx]
+
+        # Convert to class index:
+        # Class 2: D* meson
+        # Class 1: D meson
+        # Class 0: Everything else (background)
+        labels_particle = np.full_like(isFromD, 0)  # Default to "Anything Else" (Class 0)
+        labels_particle[isFromD > 0] = 1  # Class 1: D meson
+        labels_particle[isFromDStar > 0] = 2  # Class 2: D* meson (overwrites D if both exist)
 
         # Extract jet-level label
         label_jet = self.jet_isCJet[idx]

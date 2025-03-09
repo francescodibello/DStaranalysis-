@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class ParticleJetClassifier(nn.Module):
-    def __init__(self, input_dim=5, embed_dim=64, num_heads=4, num_layers=2, hidden_dim=128):
+    def __init__(self, input_dim=3, embed_dim=128, num_heads=4, num_layers=5, hidden_dim=128):
         super(ParticleJetClassifier, self).__init__()
 
         self.embedding = nn.Linear(input_dim, embed_dim)
@@ -13,8 +13,11 @@ class ParticleJetClassifier(nn.Module):
         self.particle_fc = nn.Sequential(
             nn.Linear(embed_dim, hidden_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, 2),
-            nn.Sigmoid()
+            nn.Linear(hidden_dim, 50),
+            nn.ReLU(),
+            nn.Linear(50, 20),
+            nn.ReLU(),
+            nn.Linear(20, 3),
         )
 
         self.jet_fc = nn.Sequential(
