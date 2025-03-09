@@ -6,22 +6,28 @@ from dataloader import ParticleJetDataset  # Import dataset
 from model import ParticleJetClassifier  # Import model
 
 # Load Dataset and Dataloader
-root_file = "input.root"  # Change this to your actual ROOT file
+root_file = "test.root"  # Change this to your actual ROOT file
 dataset = ParticleJetDataset(root_file)
-dataloader = DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=lambda x: list(zip(*x)))
+dataloader = DataLoader(dataset, batch_size=100, shuffle=True, collate_fn=lambda x: list(zip(*x)))
 
 # Initialize Model, Loss, and Optimizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = ParticleJetClassifier().to(device)
-criterion_particle = nn.BCELoss()
-criterion_jet = nn.BCELoss()
+criterion_particle = nn.BCELoss(reduction="mean")
+criterion_jet = nn.BCELoss(reduction="mean")
+
+
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
 # Training Loop
-num_epochs = 10
+num_epochs = 50
 for epoch in range(num_epochs):
     total_loss = 0
     model.train()
+
+    for batch_idx, batch in enumerate(dataloader):  # Add index `batch_idx`
+        if batch_idx > 0:  # Stop after processing the first event
+            break  
 
     for batch in dataloader:
         part_features, labels_particle, labels_jet = batch
@@ -36,10 +42,11 @@ for epoch in range(num_epochs):
             particles = particles.unsqueeze(0)
             pred_particle, pred_jet = model(particles)
 
+
             loss_particle = criterion_particle(pred_particle.squeeze(0), lbl_particle)
             loss_jet = criterion_jet(pred_jet.squeeze(0), lbl_jet.view(-1))
 
-            total_batch_loss = loss_particle + loss_jet
+            total_batch_loss = (loss_particle + loss_jet) / len(part_features)
             batch_loss += total_batch_loss
 
         batch_loss.backward()
