@@ -18,6 +18,7 @@ class ParticleJetClassifier(nn.Module):
             nn.Linear(50, 20),
             nn.ReLU(),
             nn.Linear(20, 3),
+            nn.Softmax(dim=1)
         )
 
         self.jet_fc = nn.Sequential(
