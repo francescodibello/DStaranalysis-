@@ -21,7 +21,7 @@ class ParticleJetDataset(Dataset):
         print(f"Loading dataset with {self.nevents} events...")
 
         # Define Variables
-        self.particle_variables = ['part_eta', 'part_phi', 'part_d0val', 'part_z0val', 'part_mass', 'part_massReco', 'part_pid']
+        self.particle_variables = ['part_eta', 'part_phi', 'part_d0val', 'part_dzval', 'part_mass', 'part_massReco', 'part_pid']
         self.particle_labels = ['part_isFromD', 'part_isFromDStar']
         self.jet_variables = ['jet_energy', 'jet_eta']
 
@@ -32,7 +32,7 @@ class ParticleJetDataset(Dataset):
 
         # Building tracks' origins
         origins = []
-        for phi, d0, z0 in zip(self.full_data_array["part_phi"], self.full_data_array["part_d0val"], self.full_data_array["part_z0val"]):
+        for phi, d0, z0 in zip(self.full_data_array["part_phi"], self.full_data_array["part_d0val"], self.full_data_array["part_dzval"]):
             y0 = abs(d0)*np.sin(phi)
             x0 = abs(d0)*np.cos(phi)
             origins.append([x0, y0, z0])

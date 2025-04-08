@@ -8,7 +8,7 @@ from model import ParticleJetClassifier  # Import model
 from vertexing import fit
 
 # Load Dataset and Dataloader
-root_file = "test.root"  # Change this to your actual ROOT file
+root_file = "../data/test.root"  # Change this to your actual ROOT file
 dataset = ParticleJetDataset(root_file)
 dataloader = DataLoader(dataset, batch_size=100, shuffle=True, collate_fn=lambda x: list(zip(*x)))
 
