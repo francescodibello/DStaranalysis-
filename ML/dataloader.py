@@ -41,7 +41,7 @@ class ParticleJetDataset(Dataset):
         # Building tracks' versors
         versors = []
         for eta, phi in zip(self.full_data_array["part_eta"], self.full_data_array["part_phi"]):
-            theta = 2*np.atan(np.exp(-eta))
+            theta = 2*np.arctan(np.exp(-eta))
             ax = np.sin(theta)*np.cos(phi)
             ay = np.sin(theta)*np.sin(phi)
             az = np.cos(theta)
