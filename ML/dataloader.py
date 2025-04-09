@@ -58,8 +58,8 @@ class ParticleJetDataset(Dataset):
         best_chi2s = []
         fit_iter = 100
         for o, a, l in zip(self.full_data_array["part_origin"], self.full_data_array["part_versor"], self.full_data_array["part_isFromD"]):
-            fit_o = torch.tensor(o[l==1])
-            fit_a = torch.tensor(a[l==1])
+            fit_o = torch.tensor(o[l==1]).float()
+            fit_a = torch.tensor(a[l==1]).float()
             
             chi2, _ = fit(fit_o, fit_a, None, fit_iter)
             best_chi2s.append(chi2.item())
