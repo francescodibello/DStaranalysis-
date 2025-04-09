@@ -66,7 +66,7 @@ def fit(origins, versors, weights, fit_iter=100):
     for _ in range(fit_iter):
         minimizer.zero_grad()
         loss = chi2(origins, versors, weights, fitted_vertex)
-        loss.backward()
+        loss.backward(retain_graph=True)
         minimizer.step()
 
     return loss, fitted_vertex
