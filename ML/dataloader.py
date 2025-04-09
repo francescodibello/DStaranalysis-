@@ -21,7 +21,7 @@ class ParticleJetDataset(Dataset):
         print(f"Loading dataset with {self.nevents} events...")
 
         # Define Variables
-        self.particle_variables = ['part_eta', 'part_phi', 'part_d0val', 'part_z0val', 'part_mass', 'part_massReco', 'part_pid']
+        self.particle_variables = ['part_eta', 'part_phi', 'part_d0val', 'part_dzval', 'part_mass', 'part_massReco', 'part_pid']
         self.particle_labels = ['part_isFromD', 'part_isFromDStar']
         self.jet_variables = ['jet_energy', 'jet_eta']
 
@@ -32,28 +32,34 @@ class ParticleJetDataset(Dataset):
 
         # Building tracks' origins
         origins = []
-        for phi, d0, z0 in zip(self.full_data_array["part_phi"], self.full_data_array["part_d0val"], self.full_data_array["part_z0val"]):
-            y0 = abs(d0)*np.sin(phi)
-            x0 = abs(d0)*np.cos(phi)
-            origins.append([x0, y0, z0])
+        for phi_jet, d0_jet, z0_jet in zip(self.full_data_array["part_phi"], self.full_data_array["part_d0val"], self.full_data_array["part_dzval"]):
+            origins_jet = []
+            for phi, d0, z0 in zip(phi_jet, d0_jet, z0_jet):
+                y0 = abs(d0)*np.sin(phi)
+                x0 = abs(d0)*np.cos(phi)
+                origins_jet.append([x0, y0, z0])
+            origins.append(origins_jet)
         self.full_data_array["part_origin"] = np.array(origins)
 
         # Building tracks' versors
         versors = []
-        for eta, phi in zip(self.full_data_array["part_eta"], self.full_data_array["part_phi"]):
-            theta = 2*np.atan(np.exp(-eta))
-            ax = np.sin(theta)*np.cos(phi)
-            ay = np.sin(theta)*np.sin(phi)
-            az = np.cos(theta)
-            versors.append([ax,ay,az])
+        for eta_jet, phi_jet in zip(self.full_data_array["part_eta"], self.full_data_array["part_phi"]):
+            versors_jet = []
+            for eta, phi in zip(eta_jet, phi_jet):    
+                theta = 2*np.arctan(np.exp(-eta))
+                ax = np.sin(theta)*np.cos(phi)
+                ay = np.sin(theta)*np.sin(phi)
+                az = np.cos(theta)
+                versors_jet.append([ax,ay,az])
+            versors.append(versors_jet)
         self.full_data_array["part_versor"] = np.array(versors)
 
         # Best chi2
         best_chi2s = []
         fit_iter = 100
         for o, a, l in zip(self.full_data_array["part_origin"], self.full_data_array["part_versor"], self.full_data_array["part_isFromD"]):
-            fit_o = torch.tensor(o[l==1])
-            fit_a = torch.tensor(a[l==1])
+            fit_o = torch.tensor(o[l==1]).float()
+            fit_a = torch.tensor(a[l==1]).float()
             
             chi2, _ = fit(fit_o, fit_a, None, fit_iter)
             best_chi2s.append(chi2.item())
