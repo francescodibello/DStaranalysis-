@@ -32,20 +32,26 @@ class ParticleJetDataset(Dataset):
 
         # Building tracks' origins
         origins = []
-        for phi, d0, z0 in zip(self.full_data_array["part_phi"], self.full_data_array["part_d0val"], self.full_data_array["part_dzval"]):
-            y0 = abs(d0)*np.sin(phi)
-            x0 = abs(d0)*np.cos(phi)
-            origins.append([x0, y0, z0])
+        for phi_jet, d0_jet, z0_jet in zip(self.full_data_array["part_phi"], self.full_data_array["part_d0val"], self.full_data_array["part_dzval"]):
+            origins_jet = []
+            for phi, d0, z0 in zip(phi_jet, d0_jet, z0_jet):
+                y0 = abs(d0)*np.sin(phi)
+                x0 = abs(d0)*np.cos(phi)
+                origins_jet.append([x0, y0, z0])
+            origins.append(origins_jet)
         self.full_data_array["part_origin"] = np.array(origins)
 
         # Building tracks' versors
         versors = []
-        for eta, phi in zip(self.full_data_array["part_eta"], self.full_data_array["part_phi"]):
-            theta = 2*np.arctan(np.exp(-eta))
-            ax = np.sin(theta)*np.cos(phi)
-            ay = np.sin(theta)*np.sin(phi)
-            az = np.cos(theta)
-            versors.append([ax,ay,az])
+        for eta_jet, phi_jet in zip(self.full_data_array["part_eta"], self.full_data_array["part_phi"]):
+            versors_jet = []
+            for eta, phi in zip(eta_jet, phi_jet):    
+                theta = 2*np.arctan(np.exp(-eta))
+                ax = np.sin(theta)*np.cos(phi)
+                ay = np.sin(theta)*np.sin(phi)
+                az = np.cos(theta)
+                versors_jet.append([ax,ay,az])
+            versors.append(versors_jet)
         self.full_data_array["part_versor"] = np.array(versors)
 
         # Best chi2
