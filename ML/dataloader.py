@@ -64,8 +64,6 @@ class ParticleJetDataset(Dataset):
             chi2, _ = fit(fit_o, fit_a, None, fit_iter)
             best_chi2s.append(chi2.item())
         self.full_data_array["best_chi2"] = np.array(best_chi2s)
-            
-
 
         # Load jet-level data
         for var in self.jet_variables:
@@ -78,14 +76,22 @@ class ParticleJetDataset(Dataset):
             else:
                 self.full_data_array[key] = np.array(self.full_data_array[key])
 
-        # Define jet-level label (c-jet: at least one D* particle)
+        # Normalize data
+        self.__normalize_full_data__()
+
+        # Define jet-level label (c-jet: at least one D particle)
         self.jet_isCJet = np.array([
-            1 if bool(np.any(self.full_data_array["part_isFromDStar"][idx] > 0)) else 0
+            1 if bool(np.any(self.full_data_array["part_isFromD"][idx] > 0)) else 0
             for idx in range(self.nevents)
         ], dtype=np.float32)
 
     def __len__(self):
         return self.nevents
+    
+    def __normalize_full_data__(self):
+        for key in self.particle_variables + self.jet_variables:
+            if isinstance(self.full_data_array[key], np.ndarray):
+                self.full_data_array[key] = (self.full_data_array[key] - np.mean(self.full_data_array[key])) / (np.std(self.full_data_array[key])+1e-12)
 
     def __getitem__(self, idx):
         # Extract per-particle features
