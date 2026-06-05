@@ -1,0 +1,12 @@
+executable      = run_generation.sh
+arguments       = $(ClusterID) $(ProcId)
+should_transfer_files = YES
+when_to_transfer_output = NEVER
+output          = /afs/cern.ch/work/f/fdibello/ChrisMalte/jetclass2_generation/run_cluster/$(ClusterId).$(ProcId).out
+error           = /afs/cern.ch/work/f/fdibello/ChrisMalte/jetclass2_generation/run_cluster/$(ClusterId).$(ProcId).err
+log             = /afs/cern.ch/work/f/fdibello/ChrisMalte/jetclass2_generation/run_cluster/$(ClusterId).$(ProcId).log
+RequestCpus     = 1
++JobFlavour     = "tomorrow"
+output_destination = root://eosuser.cern.ch//eos/user/f/fdibello/BigBello/cluster/$(ClusterId)/
+MY.XRDCP_CREATE_DIR = True
+queue 1

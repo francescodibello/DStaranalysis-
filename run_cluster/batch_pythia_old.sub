@@ -1,0 +1,10 @@
+executable      = run_generation.sh
+arguments       = $(ClusterID) $(ProcId)
+should_transfer_files = YES
+transfer_input_files = run_generation.sh 
+output          = /afs/cern.ch/work/f/fdibello/ChrisMalte/jetclass2_generation/run_cluster/$(ClusterId).$(ProcId).out
+error           = /afs/cern.ch/work/f/fdibello/ChrisMalte/jetclass2_generation/run_cluster/$(ClusterId).$(ProcId).err
+log             = /afs/cern.ch/work/f/fdibello/ChrisMalte/jetclass2_generation/run_cluster/$(ClusterId).$(ProcId).log
+RequestCpus     = 1
++JobFlavour     = "tomorrow"
+queue 1
